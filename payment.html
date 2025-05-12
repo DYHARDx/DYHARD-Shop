@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Payment - Free Fire Diamonds</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="theme-toggle-container">
+        <button id="theme-toggle" class="theme-toggle">
+            <i class="fas fa-moon"></i>
+            <i class="fas fa-sun"></i>
+        </button>
+    </div>
+
+    <div class="payment-wrapper">
+        <div class="payment-container">
+            <div class="payment-header">
+                <div class="logo">
+                    <img src="logo.png" alt="Free Fire Logo">
+                </div>
+                <h1>Complete Your Purchase</h1>
+                <div class="countdown-timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="timer">05:00</span>
+                    <p>Time remaining to complete payment</p>
+                </div>
+            </div>
+
+            <div class="payment-content">
+                <div class="payment-steps">
+                    <div class="step active">
+                        <div class="step-number">1</div>
+                        <div class="step-text">Enter Details</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Make Payment</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-text">Confirmation</div>
+                    </div>
+                </div>
+
+                <div class="payment-grid">
+                    <div class="payment-left">
+                        <form id="payment-form" class="payment-form">
+                            <div class="form-group">
+                                <label for="uid">Free Fire UID *</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" id="uid" name="uid" placeholder="Enter your Free Fire UID" required>
+                                </div>
+                                <small>Enter your Free Fire UID to receive diamonds</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="transaction">Transaction ID *</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-receipt"></i>
+                                    <input type="text" id="transaction" name="transaction" placeholder="Enter your UPI Transaction ID" required>
+                                </div>
+                                <small>Enter the transaction ID from your UPI payment</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email (Optional)</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-envelope"></i>
+                                    <input type="email" id="email" name="email" placeholder="Enter your email">
+                                </div>
+                                <small>For order updates and receipts</small>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="payment-right">
+                        <div class="order-summary">
+                            <h4><i class="fas fa-shopping-cart"></i> Order Summary</h4>
+                            <div class="summary-item">
+                                <span>Selected Pack:</span>
+                                <span class="selected-pack">Loading...</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Price:</span>
+                                <span class="pack-price">Loading...</span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total:</span>
+                                <span class="total-price">Loading...</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-methods">
+                            <h4><i class="fas fa-credit-card"></i> Payment Method</h4>
+                            <div class="qr-section">
+                                <h4><i class="fas fa-qrcode"></i> Scan QR Code to Pay</h4>
+                                <div class="qr-container">
+                                    <img src="" alt="Payment QR Code" class="qr-code" id="paymentQR">
+                                    <div class="qr-overlay">
+                                        <i class="fas fa-download"></i>
+                                        <button class="download-btn">
+                                            <i class="fas fa-download"></i>
+                                            Download QR
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="upi-details">
+                                    <div class="upi-id">
+                                        <span class="copy-text" id="upiId">Loading UPI ID...</span>
+                                        <button class="copy-btn" onclick="copyUPI()">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div class="bank-details">
+                                        <p><strong>Bank Name:</strong> <span id="bankName">Loading...</span></p>
+                                        <p><strong>Account Name:</strong> <span id="accountName">Loading...</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-footer">
+                    <button class="cancel-btn" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i> Cancel
+                    </button>
+                    <button class="confirm-btn" onclick="submitPayment()">
+                        Confirm Payment <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        // Check for saved theme preference or use system preference
+        const currentTheme = localStorage.getItem('theme') || 
+            (prefersDarkScheme.matches ? 'dark' : 'light');
+        
+        // Apply the current theme
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+        
+        // Theme toggle click handler
+        themeToggle.addEventListener('click', () => {
+            const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        // Update theme icon based on current theme
+        function updateThemeIcon(theme) {
+            const moonIcon = themeToggle.querySelector('.fa-moon');
+            const sunIcon = themeToggle.querySelector('.fa-sun');
+            
+            if (theme === 'dark') {
+                moonIcon.style.opacity = '0';
+                sunIcon.style.opacity = '1';
+            } else {
+                moonIcon.style.opacity = '1';
+                sunIcon.style.opacity = '0';
+            }
+        }
+
+        // Load pack details from localStorage
+        window.addEventListener('load', () => {
+            const selectedPack = localStorage.getItem('selectedPack');
+            const packPrice = localStorage.getItem('packPrice');
+            const priceNumber = localStorage.getItem('priceNumber');
+            
+            if (selectedPack && packPrice) {
+                document.querySelector('.selected-pack').textContent = selectedPack;
+                document.querySelector('.pack-price').textContent = packPrice;
+                document.querySelector('.total-price').textContent = packPrice;
+
+                // Set QR code based on price
+                const qrCode = document.getElementById('paymentQR');
+                qrCode.src = `${priceNumber}.png`;
+                qrCode.alt = `Payment QR Code for ${packPrice}`;
+
+                // Set UPI ID and bank details
+                const upiId = document.getElementById('upiId');
+                const bankName = document.getElementById('bankName');
+                const accountName = document.getElementById('accountName');
+
+                // Set payment details based on price
+                switch(priceNumber) {
+                    case '250':
+                        upiId.textContent = 'arunseller@fam';
+                        bankName.textContent = 'HDFC Bank';
+                        accountName.textContent = 'DYHARD';
+                        break;
+                    case '450':
+                        upiId.textContent = 'arunseller@fam';
+                        bankName.textContent = 'HDFC Bank';
+                        accountName.textContent = 'DYHARD';
+                        break;
+                    case '799':
+                        upiId.textContent = 'arunseller@fam';
+                        bankName.textContent = 'HDFC Bank';
+                        accountName.textContent = 'DYHARD';
+                        break;
+                    case '900':
+                        upiId.textContent = 'arunseller@fam';
+                        bankName.textContent = 'HDFC Bank';
+                        accountName.textContent = 'DYHARD';
+                        break;
+                    case '1200':
+                        upiId.textContent = 'arunseller@fam';
+                        bankName.textContent = 'HDFC Bank';
+                        accountName.textContent = 'DYHARD';
+                        break;
+                    case '1500':
+                        upiId.textContent = 'arunseller@fam';
+                        bankName.textContent = 'HDFC Bank';
+                        accountName.textContent = 'DYHARD';
+                        break;
+                    default:
+                        upiId.textContent = 'arunseller@fam';
+                        bankName.textContent = 'HDFC Bank';
+                        accountName.textContent = 'DYHARD';
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Countdown Timer
+        let timeLeft = 5 * 60; // 5 minutes in seconds
+        const timerDisplay = document.getElementById('timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                alert('Payment session expired. Please try again.');
+                window.history.back();
+            }
+            timeLeft--;
+        }
+        
+        const countdownInterval = setInterval(updateTimer, 1000);
+        
+        // Copy UPI ID
+        function copyUPI() {
+            const upiId = document.querySelector('.copy-text').textContent;
+            navigator.clipboard.writeText(upiId).then(() => {
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+        
+        // Form Submission
+        function submitPayment() {
+            const form = document.getElementById('payment-form');
+            const uid = document.getElementById('uid').value;
+            const transaction = document.getElementById('transaction').value;
+            
+            if (!uid || !transaction) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Show success message
+            const paymentContent = document.querySelector('.payment-content');
+            paymentContent.innerHTML = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Order Placed Successfully!</h3>
+                    <p>Your order details:</p>
+                    <div class="order-details">
+                        <p><strong>Pack:</strong> ${document.querySelector('.selected-pack').textContent}</p>
+                        <p><strong>Price:</strong> ${document.querySelector('.pack-price').textContent}</p>
+                        <p><strong>UID:</strong> ${uid}</p>
+                        <p><strong>Transaction ID:</strong> ${transaction}</p>
+                    </div>
+                    <p>We will process your order once the payment is confirmed.</p>
+                    <button class="confirm-btn" onclick="window.location.href='index.html'">Return to Home</button>
+                </div>
+            `;
+            
+            // Clear countdown
+            clearInterval(countdownInterval);
+        }
+    </script>
+</body>
+</html> 
